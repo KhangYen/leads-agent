@@ -48,8 +48,17 @@ class FitResult:
 
 
 def _normalize(text: str) -> str:
-    """Lowercase + collapse to space-delimited tokens for keyword matching."""
-    return re.sub(r"\s+", " ", (text or "").lower()).strip()
+    """Lowercase + collapse whitespace + normalize curly quotes to ASCII.
+
+    Curly apostrophe (U+2019) -> straight ' so that "I'll" matches the straight-
+    apostrophe keyword lists. Real Reddit text uses curly quotes; our signal
+    lists use ASCII. Without this, "I'll build" (curly) never matches
+    "i'll build" (straight) and mis-tagged sellers leak through.
+    """
+    s = (text or "").lower()
+    s = s.replace("\u2019", "'").replace("\u2018", "'")  # curly single quotes
+    s = s.replace("\u201c", '"').replace("\u201d", '"')  # curly double quotes
+    return re.sub(r"\s+", " ", s).strip()
 
 
 # Seller-prefix detection (case-insensitive). Posts starting with these are
@@ -61,21 +70,41 @@ SELLER_PREFIXES = ("[offer]", "[service]", "[for hire]", "[forhire]", "offer:", 
 BUYER_PREFIXES = ("[task]", "[hiring]", "[paid]", "[request]", "task:", "hiring:")
 
 
+# Body-text seller signals: phrases that, if present in the body, strongly
+# indicate the post is an OFFER (a seller advertising services), even if the
+# title uses a [TASK]-style tag. r/slavelabour has sellers who mis-tag.
+SELLER_BODY_SIGNALS = (
+    "i will build", "i'll build", "i will create", "i'll create",
+    "i will design", "i'll design", "i will write", "i'll write",
+    "i can help you with", "my services include", "i offer",
+    "hire me", "dm me to discuss your project", "check out my portfolio",
+    "i'm a ", "i am a ",  # "I'm a developer", "I am a designer" = seller intro
+)
+
+
 def classify_post(title: str, selftext: str = "") -> str:
     """Return 'seller', 'buyer', or 'unknown' based on title/body signals.
 
     This is the shared filter primitive the SKILL.md scan loop and any wrapper
-    should call before scoring. Catches the mixed-case [OFFER]/[Offer]/[offer]
-    variant that a naive startswith() uppercase check misses.
+    should call before scoring. Catches:
+      - mixed-case [OFFER]/[Offer]/[offer] title variants
+      - sellers who mis-tag with [TASK] but reveal themselves in the body
+        (e.g. "[task] I'll build you a website for $50" is a seller ad)
     """
     t = _normalize(title)
     if t.startswith(SELLER_PREFIXES):
         return "seller"
-    if t.startswith(BUYER_PREFIXES):
-        return "buyer"
     # "for hire" anywhere in title = seller (r/forhire [For Hire] tag variant)
     if "for hire" in t or "will build" in t or "i will " in t[:20]:
         return "seller"
+    # Body OR title seller signals: even with a [TASK] tag, these phrases = seller.
+    # Checks title too because sellers mis-tag in the title itself
+    # (e.g. "[task] I'll build you a website for $50" is a seller ad).
+    b = _normalize(selftext)
+    if any(sig in b[:300] for sig in SELLER_BODY_SIGNALS) or any(sig in t for sig in SELLER_BODY_SIGNALS):
+        return "seller"
+    if t.startswith(BUYER_PREFIXES):
+        return "buyer"
     # fallback: $ amount in body = likely a buyer task
     if re.search(r"\$\d+", selftext or ""):
         return "buyer"
