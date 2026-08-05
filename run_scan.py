@@ -47,7 +47,8 @@ def fetch_subreddit(opencli: str, name: str, limit: int = 40) -> list:
             r = subprocess.run(
                 [opencli, "reddit", "subreddit", name, "--sort", "new",
                  "--limit", str(limit), "-f", "json", "--window", window],
-                capture_output=True, text=True, timeout=120,
+                capture_output=True, timeout=120,
+                encoding="utf-8", errors="replace",   # opencli emits UTF-8 (emoji, curly quotes); Windows cp1252 default crashes on 0x9d
             )
         except subprocess.TimeoutExpired:
             print(f"[warn] opencli {name} (--window {window}) timed out", file=sys.stderr)
@@ -56,12 +57,13 @@ def fetch_subreddit(opencli: str, name: str, limit: int = 40) -> list:
             print(f"[warn] opencli {name} (--window {window}) failed: {r.stderr[:120]}", file=sys.stderr)
             continue
         try:
-            data = json.loads(r.stdout.strip())
+            stdout = r.stdout or ""
+            data = json.loads(stdout.strip())
             if isinstance(data, dict) and "data" in data:
                 data = data["data"]
             return data or []
         except json.JSONDecodeError:
-            print(f"[warn] {name}: JSON parse failed", file=sys.stderr)
+            print(f"[warn] {name}: JSON parse failed (stdout len={len(stdout)})", file=sys.stderr)
             return []
     print(f"[warn] opencli {name}: both foreground and background failed", file=sys.stderr)
     return []
