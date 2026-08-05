@@ -1,0 +1,65 @@
+{
+  "_comment": "Copy this file to capability_profile.json and fill it in with YOUR skills. This is the one file LeadsAgent scores tasks against. See the fields guide below or the README for details. (The .example.json is the template; capability_profile.json is gitignored so your real profile stays private.)",
+  "version": "1.0",
+  "identity": {
+    "niche": "<ONE-LINE: what you do, e.g. 'logo designer for indie SaaS' or 'Vietnamese-English translator'>",
+    "tagline": "<ONE SENTENCE: your positioning, appears in DM openers>",
+    "operator_handle": "<your name/handle>",
+    "reddit_account": "<your reddit username, or 'none yet'>"
+  },
+  "capabilities": {
+    "code": {
+      "keywords": ["python", "javascript", "node", "node.js", "typescript", "cli", "script", "api", "bug fix"],
+      "strength": 3,
+      "pitch_angle": "<one line: what you bring + a real example URL>"
+    },
+    "bots": {
+      "keywords": ["bot", "telegram", "discord", "webhook", "automation"],
+      "strength": 2,
+      "pitch_angle": "<one line>"
+    },
+    "content": {
+      "keywords": ["technical writing", "blog post", "article", "documentation", "copywriting", "write", "writer"],
+      "strength": 3,
+      "pitch_angle": "<one line>"
+    },
+    "visuals": {
+      "keywords": ["logo", "icon", "illustration", "design", "brand"],
+      "strength": 2,
+      "pitch_angle": "<one line>"
+    },
+    "data": {
+      "keywords": ["csv", "excel", "sheets", "data cleaning", "etl", "data entry", "format conversion"],
+      "strength": 3,
+      "pitch_angle": "<one line>"
+    },
+    "translation": {
+      "keywords": ["translate", "translation", "localize"],
+      "strength": 2,
+      "pitch_angle": "<one line>"
+    }
+  },
+  "portfolio": [
+    {"label": "<short label>", "url": "<real URL - GitHub, Behance, published article, shop>"},
+    {"label": "<short label>", "url": "<real URL>"}
+  ],
+  "rails": {
+    "accepted": ["paypal", "wise", "payoneer"],
+    "rejected": ["ach", "zelle"],
+    "note": "<your country/region constraint, e.g. 'SEA-based; PayPal/Wise/USDT work; no US-bank-only rails'>"
+  },
+  "rate_range_usd": {
+    "strategy": "negotiate_in_dm",
+    "floor": 20,
+    "typical_project": "100-300",
+    "note": "<any pricing rule>"
+  },
+  "honesty_gaps": [
+    "<be specific: 'no existing audience', 'new reddit account (1 karma)', 'no US bank account', etc.>"
+  ],
+  "tos_skips": [
+    "mass account creation", "fake reviews", "review solicitation",
+    "mass job-applying", "captcha bypass", "geo bypass", "identity bypass",
+    "anything that smells like fraud, impersonation, or spam"
+  ]
+}

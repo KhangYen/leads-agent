@@ -1,0 +1,20 @@
+# Your real profile + scan output - keep private
+capability_profile.json
+pitch_profile.json
+state/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp

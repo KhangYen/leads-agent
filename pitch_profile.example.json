@@ -1,0 +1,39 @@
+{
+  "_comment": "Reusable pitch fields + per-bucket hook templates for the DM drafter. Generated from capability_profile.json's identity + a hook library. The drafter combines: hook[opener] + niche + portfolio + honesty-gap + CTA into the \u2264150-word DM format.",
+  "version": "1.0",
+  "opener": "Hi - saw your task on r/{subreddit}.",
+  "niche_statement": "<one line: your niche + what you deliver, e.g. 'I design logos for indie SaaS startups.'>",
+  "cta_templates": {
+    "default": "Happy to send a sample or jump on details - just reply with the project link and I'll write a quick proof paragraph first.",
+    "code": "I can ship a minimal working version in ~24h to prove the approach - want me to scope it?",
+    "content": "I'd send a sample paragraph in your project's voice first - no obligation - so you can see the fit.",
+    "data": "I can clean a 100-row sample of your data first so you see the output before committing.",
+    "translation": "Happy to translate a short sample first so you can verify quality."
+  },
+  "honesty_disclosures": {
+    "audience": "Honest on audience: I don't run a Substack/Medium yet - I'd publish this piece to start one. If 'existing readers' is a hard requirement, I'm not your writer and I won't waste your time.",
+    "karma": "My Reddit account is new/low-karma (I'm not a Redditor by habit) - flagging in case that matters to you.",
+    "design_scope": "I do logos/icons/banners (SVG), not full UI/UX - want to be upfront on scope.",
+    "payment_rail": "I'm SEA-based (Vietnam) - PayPal/Wise/USDT all work for me; can't take ACH/Zelle.",
+    "always_included": "State which disclosure applies based on the task type: audience for writing tasks, karma if the task implies Reddit reputation, design_scope for visuals, payment_rail if rail is unstated."
+  },
+  "portfolio_selection": {
+    "code": "<your portfolio for code tasks - real URL(s), e.g. behance.net/you or github.com/you>",
+    "content": "<your portfolio for content tasks - real URL(s), e.g. behance.net/you or github.com/you>",
+    "data": "<your portfolio for data tasks - real URL(s), e.g. behance.net/you or github.com/you>",
+    "bots": "<your portfolio for bots tasks - real URL(s), e.g. behance.net/you or github.com/you>",
+    "visuals": "<your portfolio for visuals tasks - real URL(s), e.g. behance.net/you or github.com/you>",
+    "translation": "<your portfolio for translation tasks - real URL(s), e.g. behance.net/you or github.com/you>",
+    "security": "<your portfolio for security tasks - real URL(s), e.g. behance.net/you or github.com/you>"
+  },
+  "tone_rules": [
+    "Under 150 words total.",
+    "No emoji walls. No hype words ('amazing', 'rockstar', 'synergy').",
+    "Name the specific task and what they asked for in the first sentence.",
+    "Lead with the real niche overlap, not generic enthusiasm.",
+    "Disclose the relevant honesty gap BEFORE the CTA - never after.",
+    "Link real portfolio assets, not claims.",
+    "Name a price only if the OP stated a budget; otherwise ask.",
+    "Human voice - write how a busy freelancer actually texts, not a template."
+  ]
+}
