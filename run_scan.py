@@ -35,23 +35,36 @@ def _find_opencli() -> str:
 
 
 def fetch_subreddit(opencli: str, name: str, limit: int = 40) -> list:
-    """Fetch newest posts via opencli, return list of post dicts."""
-    r = subprocess.run(
-        [opencli, "reddit", "subreddit", name, "--sort", "new",
-         "--limit", str(limit), "-f", "json", "--window", "background"],
-        capture_output=True, text=True, timeout=120,
-    )
-    if r.returncode != 0:
-        print(f"[warn] opencli {name} failed: {r.stderr[:150]}", file=sys.stderr)
-        return []
-    try:
-        data = json.loads(r.stdout.strip())
-        if isinstance(data, dict) and "data" in data:
-            data = data["data"]
-        return data or []
-    except json.JSONDecodeError:
-        print(f"[warn] {name}: JSON parse failed", file=sys.stderr)
-        return []
+    """Fetch newest posts via opencli, return list of post dicts.
+
+    Uses --window foreground (the reliable path) and falls back to background
+    only if foreground fails. The skill's original default was background,
+    which spawns a detached browser that times out on some Windows setups;
+    foreground reuses the visible session and is what actually works here.
+    """
+    for window in ("foreground", "background"):
+        try:
+            r = subprocess.run(
+                [opencli, "reddit", "subreddit", name, "--sort", "new",
+                 "--limit", str(limit), "-f", "json", "--window", window],
+                capture_output=True, text=True, timeout=120,
+            )
+        except subprocess.TimeoutExpired:
+            print(f"[warn] opencli {name} (--window {window}) timed out", file=sys.stderr)
+            continue
+        if r.returncode != 0:
+            print(f"[warn] opencli {name} (--window {window}) failed: {r.stderr[:120]}", file=sys.stderr)
+            continue
+        try:
+            data = json.loads(r.stdout.strip())
+            if isinstance(data, dict) and "data" in data:
+                data = data["data"]
+            return data or []
+        except json.JSONDecodeError:
+            print(f"[warn] {name}: JSON parse failed", file=sys.stderr)
+            return []
+    print(f"[warn] opencli {name}: both foreground and background failed", file=sys.stderr)
+    return []
 
 
 def extract_payout(title: str, body: str) -> int | None:
@@ -145,7 +158,7 @@ if __name__ == "__main__":
     ap.add_argument("--subreddits", default="slavelabour,forhire", help="comma-separated")
     ap.add_argument("--profile", type=Path, default=THIS_DIR / "capability_profile.json")
     ap.add_argument("--no-draft", action="store_true", help="score + rank only")
-    ap.add_argument("--state-dir", type=Path, default=THIS_DIR / "state")
+    ap.add_argument("--state-dir", type=Path, default=THIS_DIR.parents[2] / "state")
     args = ap.parse_args()
     sys.exit(run(
         top_n=args.top,
